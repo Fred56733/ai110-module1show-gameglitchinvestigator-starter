@@ -30,12 +30,14 @@ It wrote the code, ran away, and now the game is unplayable.
   - The hints were backwards. Guessing 50 when the secret was 40 said "Go HIGHER."
   - On every other attempt the secret was turned into a string, so guesses were compared as text instead of numbers.
   - Guesses outside the range, like 110 or -10, were accepted and used up an attempt.
+  - New Game always picked a secret from 1 to 100 and didn't reset the win/loss status, so after winning you couldn't play again. Changing difficulty kept the old secret, and the prompt always said "between 1 and 100."
 - [x] **Fixes I applied:**
   - Moved `check_guess` and `parse_guess` from `app.py` into `logic_utils.py`.
   - `check_guess` now compares numbers and gives the right hint: too high says "Go LOWER," too low says "Go HIGHER."
   - Removed the code that turned the secret into a string.
   - `parse_guess` now rejects guesses outside the difficulty's range with an error, and invalid guesses no longer count as an attempt.
   - Added pytest cases for wins, high/low hints, and out-of-range input.
+  - Added `start_new_game` in `app.py`. New Game and changing difficulty now pick a secret inside the current range and reset attempts, score, status, and history, and the prompt shows the real range.
 
 ## 📸 Demo Walkthrough
 
@@ -44,10 +46,11 @@ Describe your fixed game in numbered steps so a reader can follow along without 
 Sample game on **Normal** (range 1 to 100, 8 attempts), with a secret number of 55:
 
 1. User enters a guess of 40 → game returns "Too Low" with the hint "📈 Go HIGHER!" Score: -5.
-2. User enters a guess of 70 → game returns "Too High" with the hint "📉 Go LOWER!" Score: -10.
+2. User enters a guess of 70 → game returns "Too High" with the hint "📉 Go LOWER!" Score: 0 (the scoring rules give +5 for "Too High" on even attempts).
 3. User enters a guess of 110 → game shows the error "Guess must be between 1 and 100." The guess isn't scored and doesn't use up an attempt.
-4. User enters a guess of 55 → game shows "🎉 Correct!" and balloons. Score: 40.
-5. Game ends with "You won! The secret was 55. Final score: 40", and further guesses are blocked until you start a new game.
+4. User enters a guess of 55 → game shows "🎉 Correct!" and balloons. Score: 60.
+5. Game ends with "You won! The secret was 55. Final score: 60", and further guesses are blocked.
+6. User clicks New Game → a new secret is picked within the current range, and attempts, score, and history reset to start fresh.
 
 ![alt text](image.png)
 
